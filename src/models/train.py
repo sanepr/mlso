@@ -39,6 +39,10 @@ from sklearn.metrics import (
     roc_auc_score
 )
 
+# Import MLflow configuration
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from src.config.mlflow_config import get_mlflow_config, print_config
+
 warnings.filterwarnings('ignore')
 
 # Configure paths
@@ -47,17 +51,15 @@ DATA_DIR = PROJECT_ROOT / "data" / "processed"
 MODEL_DIR = PROJECT_ROOT / "models"
 MODEL_DIR.mkdir(parents=True, exist_ok=True)
 
-# MLflow configuration
-MLFLOW_TRACKING_URI = "file:./mlruns"
-EXPERIMENT_NAME = "model-training-comparison"
-
 
 def setup_mlflow():
-    """Initialize MLflow tracking."""
-    mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
-    mlflow.set_experiment(EXPERIMENT_NAME)
-    print(f"MLflow tracking URI: {MLFLOW_TRACKING_URI}")
-    print(f"Experiment: {EXPERIMENT_NAME}")
+    """Initialize MLflow tracking with environment-aware configuration."""
+    config = get_mlflow_config()
+    mlflow.set_tracking_uri(config['tracking_uri'])
+    mlflow.set_experiment(config['experiment_name'])
+
+    # Print configuration for visibility
+    print_config()
 
 
 def load_data() -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:

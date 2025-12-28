@@ -1,0 +1,119 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for MLflow backend
+  mlflow-db:
+    image: postgres:15-alpine
+    container_name: mlflow-postgres
+    environment:
+      POSTGRES_USER: mlflow
+      POSTGRES_PASSWORD: mlflow_password
+      POSTGRES_DB: mlflow
+    volumes:
+      - mlflow-db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mlflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - mlflow-network
+
+  # MLflow Tracking Server
+  mlflow-server:
+    image: python:3.10-slim
+    container_name: mlflow-server
+    ports:
+      - "5001:5000"  # External:Internal - Use 5001 to avoid conflict with local MLflow UI
+    environment:
+      # AWS S3 Configuration (if using S3)
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION:-us-east-1}
+
+      # Azure Configuration (if using Azure Blob)
+      AZURE_STORAGE_CONNECTION_STRING: ${AZURE_STORAGE_CONNECTION_STRING:-}
+
+      # Backend Store
+      BACKEND_STORE_URI: postgresql://mlflow:mlflow_password@mlflow-db:5432/mlflow
+
+      # Artifact Store (choose one)
+      # For S3:
+      ARTIFACT_ROOT: ${MLFLOW_ARTIFACT_ROOT:-s3://your-mlflow-bucket/artifacts}
+      # For local (development):
+      # ARTIFACT_ROOT: /mlflow/artifacts
+    volumes:
+      # Uncomment for local artifact storage (development only)
+      # - mlflow-artifacts:/mlflow/artifacts
+      - ./mlflow-server-entrypoint.sh:/entrypoint.sh
+    command: /entrypoint.sh
+    depends_on:
+      mlflow-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]  # Internal port
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - mlflow-network
+
+  # MinIO (Optional - S3-compatible object storage for local development)
+  minio:
+    image: minio/minio:latest
+    container_name: mlflow-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - mlflow-network
+    profiles:
+      - with-minio
+
+  # MinIO Client - Create bucket on startup
+  minio-create-bucket:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add myminio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc mb --ignore-existing myminio/mlflow-artifacts;
+      /usr/bin/mc policy set download myminio/mlflow-artifacts;
+      exit 0;
+      "
+    networks:
+      - mlflow-network
+    profiles:
+      - with-minio
+
+volumes:
+  mlflow-db-data:
+    driver: local
+  minio-data:
+    driver: local
+  # Uncomment for local artifact storage
+  # mlflow-artifacts:
+  #   driver: local
+
+networks:
+  mlflow-network:
+    driver: bridge
+
