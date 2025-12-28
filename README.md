@@ -437,6 +437,23 @@ Comprehensive documentation is available in the [`docs/`](./docs/) folder:
 
 **📚 See [docs/README.md](./docs/README.md) for complete documentation index with 40+ guides**
 
+## 🤖 AI Tool Instructions
+
+This project includes instructions for AI assistants (GitHub Copilot, ChatGPT, Claude, etc.) to maintain consistent documentation:
+
+- **[AI_DOCUMENTATION_NAMING_INSTRUCTIONS.md](./AI_DOCUMENTATION_NAMING_INSTRUCTIONS.md)** - Complete guide for all AI tools
+- **[.copilot-instructions.md](./.copilot-instructions.md)** - GitHub Copilot specific instructions
+
+### Documentation Naming Convention
+All documentation files (except README.md) follow this format:
+```
+docs/YYYYMMDD_HHMMSS_DESCRIPTIVE_NAME.md
+```
+
+**Example:** `docs/20251228_143022_DOCKER_FIX_SUMMARY.md`
+
+When using AI tools to create documentation, they will automatically follow this naming convention.
+
 ## 🤝 Contributing
 
 1. Fork the repository
