@@ -1,0 +1,49 @@
+# Prometheus Configuration for Heart Disease API Monitoring
+
+global:
+  scrape_interval: 15s  # How frequently to scrape targets
+  evaluation_interval: 15s  # How frequently to evaluate rules
+  external_labels:
+    cluster: 'heart-disease-api'
+    environment: 'development'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+          # - alertmanager:9093
+
+# Load rules once and periodically evaluate them
+rule_files:
+  # - "alerts.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+
+  # Heart Disease API
+  - job_name: 'heart-disease-api'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['host.docker.internal:8002']  # For Docker on Mac/Windows
+        labels:
+          service: 'heart-disease-api'
+          environment: 'development'
+    metrics_path: '/metrics'
+
+  # Alternative target for Linux
+  - job_name: 'heart-disease-api-linux'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['172.17.0.1:8002']  # Docker bridge network on Linux
+        labels:
+          service: 'heart-disease-api'
+          environment: 'development'
+    metrics_path: '/metrics'
+

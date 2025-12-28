@@ -123,15 +123,35 @@ def load_model(model_path='models/best_model.pkl'):
 
 @app.before_request
 def before_request():
-    """Track active requests"""
+    """Track active requests and log incoming requests"""
     active_requests.inc()
     request.start_time = time.time()
+
+    # Log incoming request
+    logger.info(
+        f"Incoming request: {request.method} {request.path} "
+        f"from {request.remote_addr} "
+        f"User-Agent: {request.headers.get('User-Agent', 'Unknown')}"
+    )
 
 
 @app.after_request
 def after_request(response):
-    """Track request completion"""
+    """Track request completion and log response"""
     active_requests.dec()
+
+    # Calculate request duration
+    if hasattr(request, 'start_time'):
+        duration = time.time() - request.start_time
+
+        # Log request completion
+        logger.info(
+            f"Request completed: {request.method} {request.path} "
+            f"Status: {response.status_code} "
+            f"Duration: {duration*1000:.2f}ms "
+            f"Size: {response.content_length or 0} bytes"
+        )
+
     return response
 
 
@@ -208,6 +228,9 @@ def predict():
                 'missing_features': missing_features
             }), 400
         
+        # Log input features
+        logger.info(f"Prediction request received with features: age={data.get('age')}, sex={data.get('sex')}, cp={data.get('cp')}")
+
         # Extract features in correct order
         features = np.array([[data[f] for f in required_features]])
         
@@ -239,8 +262,14 @@ def predict():
             'processing_time_ms': round(elapsed_time * 1000, 2)
         }
         
-        logger.info(f"Prediction completed: {prediction_result}, confidence: {prediction_proba[1]:.2f}")
-        
+        # Detailed logging
+        logger.info(
+            f"Prediction completed: result={prediction_result}, "
+            f"confidence={prediction_proba[1]:.4f}, "
+            f"risk_level={response['risk_level']}, "
+            f"processing_time={elapsed_time*1000:.2f}ms"
+        )
+
         return jsonify(response), 200
         
     except ValueError as e:
