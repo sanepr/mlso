@@ -1,165 +1,591 @@
 {
-  "dashboard": {
-    "title": "Heart Disease API Monitoring",
-    "tags": ["api", "ml", "heart-disease"],
-    "timezone": "browser",
-    "schemaVersion": 16,
-    "version": 0,
-    "refresh": "10s",
-    "panels": [
-      {
-        "id": 1,
-        "title": "Total Predictions",
-        "type": "stat",
-        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
-        "targets": [
-          {
-            "expr": "sum(heart_disease_predictions_total)",
-            "legendFormat": "Total Predictions",
-            "refId": "A"
-          }
-        ],
-        "options": {
-          "graphMode": "area",
-          "colorMode": "value"
+  "title": "Heart Disease API - Production Monitoring",
+  "tags": [
+    "api",
+    "ml",
+    "heart-disease",
+    "production"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "10s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Total Predictions",
+      "type": "stat",
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "sum(heart_disease_predictions_total)",
+          "legendFormat": "Total",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "graphMode": "area",
+        "colorMode": "value",
+        "textMode": "value_and_name",
+        "reduceOptions": {
+          "values": false,
+          "calcs": [
+            "lastNotNull"
+          ]
         }
       },
-      {
-        "id": 2,
-        "title": "Prediction Rate (per minute)",
-        "type": "graph",
-        "gridPos": {"h": 8, "w": 18, "x": 6, "y": 0},
-        "targets": [
-          {
-            "expr": "rate(heart_disease_predictions_total[1m])",
-            "legendFormat": "{{prediction_result}}",
-            "refId": "A"
-          }
-        ],
-        "yaxes": [
-          {"format": "reqps", "label": "Requests/sec"},
-          {"format": "short"}
-        ]
-      },
-      {
-        "id": 3,
-        "title": "Average Response Time",
-        "type": "stat",
-        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 8},
-        "targets": [
-          {
-            "expr": "rate(heart_disease_prediction_latency_seconds_sum[5m]) / rate(heart_disease_prediction_latency_seconds_count[5m])",
-            "legendFormat": "Avg Latency",
-            "refId": "A"
-          }
-        ],
-        "options": {
-          "unit": "s",
-          "graphMode": "area",
-          "colorMode": "value"
-        }
-      },
-      {
-        "id": 4,
-        "title": "Response Time Distribution",
-        "type": "graph",
-        "gridPos": {"h": 8, "w": 18, "x": 6, "y": 8},
-        "targets": [
-          {
-            "expr": "histogram_quantile(0.50, rate(heart_disease_prediction_latency_seconds_bucket[5m]))",
-            "legendFormat": "p50",
-            "refId": "A"
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
           },
-          {
-            "expr": "histogram_quantile(0.90, rate(heart_disease_prediction_latency_seconds_bucket[5m]))",
-            "legendFormat": "p90",
-            "refId": "B"
-          },
-          {
-            "expr": "histogram_quantile(0.99, rate(heart_disease_prediction_latency_seconds_bucket[5m]))",
-            "legendFormat": "p99",
-            "refId": "C"
-          }
-        ],
-        "yaxes": [
-          {"format": "s", "label": "Response Time"},
-          {"format": "short"}
-        ]
-      },
-      {
-        "id": 5,
-        "title": "Error Rate",
-        "type": "graph",
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
-        "targets": [
-          {
-            "expr": "rate(heart_disease_prediction_errors_total[5m])",
-            "legendFormat": "{{error_type}}",
-            "refId": "A"
-          }
-        ],
-        "alert": {
-          "conditions": [
-            {
-              "evaluator": {"params": [0.1], "type": "gt"},
-              "query": {"params": ["A", "5m", "now"]},
-              "type": "query"
-            }
-          ],
-          "name": "High Error Rate"
-        }
-      },
-      {
-        "id": 6,
-        "title": "Active Requests",
-        "type": "graph",
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
-        "targets": [
-          {
-            "expr": "heart_disease_active_requests",
-            "legendFormat": "Active Requests",
-            "refId": "A"
-          }
-        ]
-      },
-      {
-        "id": 7,
-        "title": "Prediction Results Distribution",
-        "type": "piechart",
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24},
-        "targets": [
-          {
-            "expr": "sum by (prediction_result) (heart_disease_predictions_total)",
-            "legendFormat": "{{prediction_result}}",
-            "refId": "A"
-          }
-        ]
-      },
-      {
-        "id": 8,
-        "title": "Model Status",
-        "type": "stat",
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
-        "targets": [
-          {
-            "expr": "heart_disease_model_info",
-            "legendFormat": "Model Loaded",
-            "refId": "A"
-          }
-        ],
-        "options": {
-          "graphMode": "none",
-          "colorMode": "background",
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {"value": 0, "color": "red"},
-              {"value": 1, "color": "green"}
+              {
+                "value": 0,
+                "color": "blue"
+              },
+              {
+                "value": 100,
+                "color": "green"
+              },
+              {
+                "value": 1000,
+                "color": "yellow"
+              }
             ]
           }
         }
       }
+    },
+    {
+      "id": 2,
+      "title": "Positive Predictions",
+      "type": "stat",
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 4,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "sum(heart_disease_predictions_total{prediction_result=\"positive\"})",
+          "legendFormat": "Positive",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "graphMode": "area",
+        "colorMode": "value",
+        "textMode": "value_and_name"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "red"
+          }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Negative Predictions",
+      "type": "stat",
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 8,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "sum(heart_disease_predictions_total{prediction_result=\"negative\"})",
+          "legendFormat": "Negative",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "graphMode": "area",
+        "colorMode": "value",
+        "textMode": "value_and_name"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "green"
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Model Status",
+      "type": "stat",
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 12,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "heart_disease_model_info",
+          "legendFormat": "Model",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "graphMode": "none",
+        "colorMode": "background",
+        "textMode": "value_and_name"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "value": "0",
+              "text": "NOT LOADED"
+            },
+            {
+              "type": "value",
+              "value": "1",
+              "text": "LOADED"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "red"
+              },
+              {
+                "value": 1,
+                "color": "green"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Avg Response Time (ms)",
+      "type": "stat",
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 16,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "(rate(heart_disease_prediction_latency_seconds_sum[5m]) / rate(heart_disease_prediction_latency_seconds_count[5m])) * 1000",
+          "legendFormat": "Latency",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "graphMode": "area",
+        "colorMode": "value"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "green"
+              },
+              {
+                "value": 100,
+                "color": "yellow"
+              },
+              {
+                "value": 500,
+                "color": "red"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Active Requests",
+      "type": "stat",
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 20,
+        "y": 0
+      },
+      "targets": [
+        {
+          "expr": "heart_disease_active_requests",
+          "legendFormat": "Active",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "graphMode": "area",
+        "colorMode": "value"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "green"
+              },
+              {
+                "value": 10,
+                "color": "yellow"
+              },
+              {
+                "value": 50,
+                "color": "red"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 7,
+      "title": "Prediction Rate (requests/sec)",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 6
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(heart_disease_predictions_total[1m])) by (prediction_result)",
+          "legendFormat": "{{prediction_result}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 20,
+            "showPoints": "never"
+          },
+          "unit": "reqps"
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "title": "Response Time Percentiles",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 6
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, rate(heart_disease_prediction_latency_seconds_bucket[5m])) * 1000",
+          "legendFormat": "p50",
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.90, rate(heart_disease_prediction_latency_seconds_bucket[5m])) * 1000",
+          "legendFormat": "p90",
+          "refId": "B"
+        },
+        {
+          "expr": "histogram_quantile(0.95, rate(heart_disease_prediction_latency_seconds_bucket[5m])) * 1000",
+          "legendFormat": "p95",
+          "refId": "C"
+        },
+        {
+          "expr": "histogram_quantile(0.99, rate(heart_disease_prediction_latency_seconds_bucket[5m])) * 1000",
+          "legendFormat": "p99",
+          "refId": "D"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 10
+          },
+          "unit": "ms"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "title": "Prediction Results Distribution",
+      "type": "piechart",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 14
+      },
+      "targets": [
+        {
+          "expr": "sum by (prediction_result) (heart_disease_predictions_total)",
+          "legendFormat": "{{prediction_result}}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right"
+        },
+        "pieType": "donut",
+        "displayLabels": [
+          "percent",
+          "name"
+        ]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "hideFrom": {
+              "tooltip": false,
+              "viz": false,
+              "legend": false
+            }
+          },
+          "color": {
+            "mode": "palette-classic"
+          }
+        }
+      }
+    },
+    {
+      "id": 10,
+      "title": "Error Rate by Type",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 14
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(heart_disease_prediction_errors_total[5m])) by (error_type)",
+          "legendFormat": "{{error_type}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 50
+          },
+          "unit": "ops",
+          "color": {
+            "mode": "palette-classic"
+          }
+        }
+      },
+      "alert": {
+        "name": "High Error Rate Alert",
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                0.1
+              ],
+              "type": "gt"
+            },
+            "query": {
+              "params": [
+                "A",
+                "5m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "avg"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "5m",
+        "frequency": "1m",
+        "message": "Error rate is above threshold",
+        "noDataState": "no_data"
+      }
+    },
+    {
+      "id": 11,
+      "title": "Active Requests Over Time",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 14
+      },
+      "targets": [
+        {
+          "expr": "heart_disease_active_requests",
+          "legendFormat": "Active Requests",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 30
+          },
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          }
+        }
+      }
+    },
+    {
+      "id": 12,
+      "title": "Total Predictions Timeline",
+      "type": "timeseries",
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 22
+      },
+      "targets": [
+        {
+          "expr": "sum(heart_disease_predictions_total)",
+          "legendFormat": "Total Predictions",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 40
+          },
+          "color": {
+            "mode": "palette-classic"
+          }
+        }
+      }
+    },
+    {
+      "id": 13,
+      "title": "API Health Status",
+      "type": "stat",
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 22
+      },
+      "targets": [
+        {
+          "expr": "up{job=\"heart-disease-api\"}",
+          "legendFormat": "API Status",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "graphMode": "none",
+        "colorMode": "background",
+        "textMode": "value_and_name"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "value": "0",
+              "text": "DOWN"
+            },
+            {
+              "type": "value",
+              "value": "1",
+              "text": "UP"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": 0,
+                "color": "red"
+              },
+              {
+                "value": 1,
+                "color": "green"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": [
+      {
+        "datasource": "Prometheus",
+        "enable": true,
+        "expr": "ALERTS{alertname=\"HighErrorRate\"}",
+        "iconColor": "red",
+        "name": "Alerts",
+        "step": "60s",
+        "tagKeys": "alertname",
+        "textFormat": "{{alertname}}",
+        "titleFormat": "Alert"
+      }
     ]
-  }
+  },
+  "uid": "heart-disease-api",
+  "id": null
 }
-
