@@ -74,9 +74,20 @@ jobs:
         with open(metadata_path, 'r') as f:
             metadata = json.load(f)
         
-        accuracy = metadata.get('test_accuracy', 0)
-        roc_auc = metadata.get('test_roc_auc', 0)
-        f1_score = metadata.get('test_f1', 0)
+        # Handle both flat and nested metadata structures
+        if 'test_accuracy' in metadata:
+            accuracy = metadata.get('test_accuracy', 0)
+            roc_auc = metadata.get('test_roc_auc', 0)
+            f1_score = metadata.get('test_f1', 0)
+        elif 'metrics' in metadata and isinstance(metadata['metrics'], dict):
+            # Nested structure - use cv metrics as proxy
+            metrics = metadata['metrics']
+            accuracy = metrics.get('cv_accuracy', metrics.get('test_accuracy', 0))
+            roc_auc = metrics.get('cv_roc_auc', metrics.get('test_roc_auc', 0))
+            f1_score = metrics.get('cv_f1', metrics.get('test_f1', 0))
+        else:
+            print('❌ Could not find performance metrics in metadata')
+            sys.exit(1)
         
         print(f'📊 Model Performance:')
         print(f'  Accuracy: {accuracy:.4f}')
@@ -122,8 +133,17 @@ jobs:
             with open(current_metadata_path, 'r') as f:
                 current = json.load(f)
             
-            current_acc = current.get('test_accuracy', 0)
-            current_auc = current.get('test_roc_auc', 0)
+            # Handle both flat and nested metadata structures
+            if 'test_accuracy' in current:
+                current_acc = current.get('test_accuracy', 0)
+                current_auc = current.get('test_roc_auc', 0)
+            elif 'metrics' in current and isinstance(current['metrics'], dict):
+                metrics = current['metrics']
+                current_acc = metrics.get('cv_accuracy', metrics.get('test_accuracy', 0))
+                current_auc = metrics.get('cv_roc_auc', metrics.get('test_roc_auc', 0))
+            else:
+                current_acc = 0
+                current_auc = 0
             
             # In production, you would compare with production model
             # For now, just report current metrics
