@@ -28,6 +28,8 @@ import numpy as np
 import pandas as pd
 import mlflow
 import mlflow.sklearn
+import mlflow.data
+from mlflow.data.pandas_dataset import PandasDataset
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV, cross_val_score, StratifiedKFold
@@ -62,31 +64,37 @@ def setup_mlflow():
     print_config()
 
 
-def load_data() -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+def load_data() -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, pd.DataFrame, pd.DataFrame]:
     """
     Load preprocessed training and testing data.
     
     Returns:
-        Tuple of (X_train, X_test, y_train, y_test)
+        Tuple of (X_train, X_test, y_train, y_test, X_train_df, X_test_df)
     """
     print("\n" + "="*80)
     print("LOADING PREPROCESSED DATA")
     print("="*80)
     
     try:
-        # Load pickle files (pandas DataFrames/Series) and convert to numpy arrays
-        X_train = pd.read_pickle(DATA_DIR / "X_train.pkl").values
-        X_test = pd.read_pickle(DATA_DIR / "X_test.pkl").values
-        y_train = pd.read_pickle(DATA_DIR / "y_train.pkl").values
-        y_test = pd.read_pickle(DATA_DIR / "y_test.pkl").values
+        # Load pickle files (pandas DataFrames/Series)
+        X_train_df = pd.read_pickle(DATA_DIR / "X_train.pkl")
+        X_test_df = pd.read_pickle(DATA_DIR / "X_test.pkl")
+        y_train_series = pd.read_pickle(DATA_DIR / "y_train.pkl")
+        y_test_series = pd.read_pickle(DATA_DIR / "y_test.pkl")
+
+        # Convert to numpy arrays for model training
+        X_train = X_train_df.values
+        X_test = X_test_df.values
+        y_train = y_train_series.values
+        y_test = y_test_series.values
 
         print(f"✓ Training set: {X_train.shape[0]} samples, {X_train.shape[1]} features")
         print(f"✓ Test set: {X_test.shape[0]} samples")
         print(f"✓ Class distribution (train): {np.bincount(y_train.astype(int))}")
         print(f"✓ Class distribution (test): {np.bincount(y_test.astype(int))}")
         
-        return X_train, X_test, y_train, y_test
-    
+        return X_train, X_test, y_train, y_test, X_train_df, X_test_df
+
     except FileNotFoundError as e:
         print(f"✗ Error: Preprocessed data not found in {DATA_DIR}")
         print("  Please run the preprocessing script first:")
@@ -204,7 +212,9 @@ def train_logistic_regression(
     X_train: np.ndarray,
     X_test: np.ndarray,
     y_train: np.ndarray,
-    y_test: np.ndarray
+    y_test: np.ndarray,
+    X_train_df: pd.DataFrame = None,
+    X_test_df: pd.DataFrame = None
 ) -> Tuple[Any, Dict[str, float], Dict[str, Any]]:
     """
     Train Logistic Regression with hyperparameter tuning.
@@ -214,7 +224,9 @@ def train_logistic_regression(
         X_test: Test features
         y_train: Training labels
         y_test: Test labels
-    
+        X_train_df: Training features as DataFrame (for dataset logging)
+        X_test_df: Test features as DataFrame (for dataset logging)
+
     Returns:
         Tuple of (best_model, metrics, best_params)
     """
@@ -226,6 +238,35 @@ def train_logistic_regression(
         # Log model type
         mlflow.log_param("model_type", "LogisticRegression")
         
+        # Log dataset information
+        if X_train_df is not None:
+            try:
+                # Create training dataset
+                train_df = X_train_df.copy()
+                train_df['target'] = y_train
+                train_dataset = mlflow.data.from_pandas(
+                    train_df,
+                    source="data/processed/X_train.pkl",
+                    name="heart_disease_training_data",
+                    targets="target"
+                )
+                mlflow.log_input(train_dataset, context="training")
+                print(f"✓ Training dataset logged to MLflow")
+
+                # Create test dataset
+                test_df = X_test_df.copy()
+                test_df['target'] = y_test
+                test_dataset = mlflow.data.from_pandas(
+                    test_df,
+                    source="data/processed/X_test.pkl",
+                    name="heart_disease_test_data",
+                    targets="target"
+                )
+                mlflow.log_input(test_dataset, context="testing")
+                print(f"✓ Test dataset logged to MLflow")
+            except Exception as e:
+                print(f"⚠️  Could not log datasets: {e}")
+
         # Initialize model
         lr = LogisticRegression(random_state=42)
         
@@ -321,7 +362,9 @@ def train_random_forest(
     X_train: np.ndarray,
     X_test: np.ndarray,
     y_train: np.ndarray,
-    y_test: np.ndarray
+    y_test: np.ndarray,
+    X_train_df: pd.DataFrame = None,
+    X_test_df: pd.DataFrame = None
 ) -> Tuple[Any, Dict[str, float], Dict[str, Any]]:
     """
     Train Random Forest with hyperparameter tuning.
@@ -331,7 +374,9 @@ def train_random_forest(
         X_test: Test features
         y_train: Training labels
         y_test: Test labels
-    
+        X_train_df: Training features as DataFrame (for dataset logging)
+        X_test_df: Test features as DataFrame (for dataset logging)
+
     Returns:
         Tuple of (best_model, metrics, best_params)
     """
@@ -343,6 +388,35 @@ def train_random_forest(
         # Log model type
         mlflow.log_param("model_type", "RandomForest")
         
+        # Log dataset information
+        if X_train_df is not None:
+            try:
+                # Create training dataset
+                train_df = X_train_df.copy()
+                train_df['target'] = y_train
+                train_dataset = mlflow.data.from_pandas(
+                    train_df,
+                    source="data/processed/X_train.pkl",
+                    name="heart_disease_training_data",
+                    targets="target"
+                )
+                mlflow.log_input(train_dataset, context="training")
+                print(f"✓ Training dataset logged to MLflow")
+
+                # Create test dataset
+                test_df = X_test_df.copy()
+                test_df['target'] = y_test
+                test_dataset = mlflow.data.from_pandas(
+                    test_df,
+                    source="data/processed/X_test.pkl",
+                    name="heart_disease_test_data",
+                    targets="target"
+                )
+                mlflow.log_input(test_dataset, context="testing")
+                print(f"✓ Test dataset logged to MLflow")
+            except Exception as e:
+                print(f"⚠️  Could not log datasets: {e}")
+
         # Initialize model
         rf = RandomForestClassifier(random_state=42, n_jobs=-1)
         
@@ -575,17 +649,17 @@ def main():
     # Setup MLflow
     setup_mlflow()
     
-    # Load data
-    X_train, X_test, y_train, y_test = load_data()
-    
-    # Train Logistic Regression
+    # Load data (now returns DataFrames too)
+    X_train, X_test, y_train, y_test, X_train_df, X_test_df = load_data()
+
+    # Train Logistic Regression (with dataset logging)
     lr_model, lr_metrics, lr_params = train_logistic_regression(
-        X_train, X_test, y_train, y_test
+        X_train, X_test, y_train, y_test, X_train_df, X_test_df
     )
     
-    # Train Random Forest
+    # Train Random Forest (with dataset logging)
     rf_model, rf_metrics, rf_params = train_random_forest(
-        X_train, X_test, y_train, y_test
+        X_train, X_test, y_train, y_test, X_train_df, X_test_df
     )
     
     # Compare models
