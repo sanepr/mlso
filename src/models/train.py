@@ -265,6 +265,39 @@ def train_logistic_regression(
         for metric_name, metric_value in metrics.items():
             mlflow.log_metric(metric_name, metric_value)
         
+        # Log evaluation metrics as table
+        eval_table = pd.DataFrame([{
+            'Metric': 'Accuracy',
+            'Training': metrics['train_accuracy'],
+            'Test': metrics['test_accuracy'],
+            'Cross-Validation': metrics['cv_accuracy']
+        }, {
+            'Metric': 'ROC-AUC',
+            'Training': metrics['train_roc_auc'],
+            'Test': metrics['test_roc_auc'],
+            'Cross-Validation': metrics['cv_roc_auc']
+        }, {
+            'Metric': 'Precision',
+            'Training': metrics['train_precision'],
+            'Test': metrics['test_precision'],
+            'Cross-Validation': metrics['cv_precision']
+        }, {
+            'Metric': 'Recall',
+            'Training': metrics['train_recall'],
+            'Test': metrics['test_recall'],
+            'Cross-Validation': metrics['cv_recall']
+        }, {
+            'Metric': 'F1-Score',
+            'Training': metrics['train_f1'],
+            'Test': metrics['test_f1'],
+            'Cross-Validation': metrics['cv_f1']
+        }])
+
+        try:
+            mlflow.log_table(data=eval_table, artifact_file="evaluation_metrics.json")
+        except Exception as e:
+            print(f"⚠️  Could not log evaluation table: {e}")
+
         # Print metrics
         print("\n" + "-"*80)
         print("EVALUATION METRICS")
@@ -349,13 +382,57 @@ def train_random_forest(
         for metric_name, metric_value in metrics.items():
             mlflow.log_metric(metric_name, metric_value)
         
+        # Log evaluation metrics as table
+        eval_table = pd.DataFrame([{
+            'Metric': 'Accuracy',
+            'Training': metrics['train_accuracy'],
+            'Test': metrics['test_accuracy'],
+            'Cross-Validation': metrics['cv_accuracy']
+        }, {
+            'Metric': 'ROC-AUC',
+            'Training': metrics['train_roc_auc'],
+            'Test': metrics['test_roc_auc'],
+            'Cross-Validation': metrics['cv_roc_auc']
+        }, {
+            'Metric': 'Precision',
+            'Training': metrics['train_precision'],
+            'Test': metrics['test_precision'],
+            'Cross-Validation': metrics['cv_precision']
+        }, {
+            'Metric': 'Recall',
+            'Training': metrics['train_recall'],
+            'Test': metrics['test_recall'],
+            'Cross-Validation': metrics['cv_recall']
+        }, {
+            'Metric': 'F1-Score',
+            'Training': metrics['train_f1'],
+            'Test': metrics['test_f1'],
+            'Cross-Validation': metrics['cv_f1']
+        }])
+
+        try:
+            mlflow.log_table(data=eval_table, artifact_file="evaluation_metrics.json")
+        except Exception as e:
+            print(f"⚠️  Could not log evaluation table: {e}")
+
         # Feature importance
         if hasattr(best_model, 'feature_importances_'):
             feature_importance = best_model.feature_importances_
             top_features = np.argsort(feature_importance)[-10:][::-1]
             print(f"\n✓ Top 10 feature indices: {top_features.tolist()}")
             mlflow.log_param("top_10_features", top_features.tolist())
-        
+
+            # Log feature importance as table
+            feature_importance_table = pd.DataFrame({
+                'Feature_Index': range(len(feature_importance)),
+                'Importance': feature_importance
+            }).sort_values('Importance', ascending=False).head(10)
+
+            try:
+                mlflow.log_table(data=feature_importance_table, artifact_file="feature_importance.json")
+            except Exception as e:
+                print(f"⚠️  Could not log feature importance table: {e}")
+
         # Print metrics
         print("\n" + "-"*80)
         print("EVALUATION METRICS")
@@ -437,6 +514,40 @@ def compare_models(
     
     print("\n" + comparison_df.to_string())
     
+    # Log comparison table to MLflow for visualization
+    # Create a table format suitable for MLflow UI
+    comparison_table = pd.DataFrame([
+        {
+            'Model': 'Logistic Regression',
+            'Train Accuracy': lr_metrics['train_accuracy'],
+            'Train ROC-AUC': lr_metrics['train_roc_auc'],
+            'Test Accuracy': lr_metrics['test_accuracy'],
+            'Test ROC-AUC': lr_metrics['test_roc_auc'],
+            'Test Precision': lr_metrics['test_precision'],
+            'Test Recall': lr_metrics['test_recall'],
+            'Test F1': lr_metrics['test_f1'],
+            'CV ROC-AUC': lr_metrics['cv_roc_auc'],
+        },
+        {
+            'Model': 'Random Forest',
+            'Train Accuracy': rf_metrics['train_accuracy'],
+            'Train ROC-AUC': rf_metrics['train_roc_auc'],
+            'Test Accuracy': rf_metrics['test_accuracy'],
+            'Test ROC-AUC': rf_metrics['test_roc_auc'],
+            'Test Precision': rf_metrics['test_precision'],
+            'Test Recall': rf_metrics['test_recall'],
+            'Test F1': rf_metrics['test_f1'],
+            'CV ROC-AUC': rf_metrics['cv_roc_auc'],
+        }
+    ])
+
+    # Log table to MLflow - will be visible in MLflow UI under "Tables" tab
+    try:
+        mlflow.log_table(data=comparison_table, artifact_file="model_comparison.json")
+        print("\n✓ Model comparison table logged to MLflow")
+    except Exception as e:
+        print(f"\n⚠️  Could not log table to MLflow: {e}")
+
     # Select best model based on test ROC-AUC
     lr_score = lr_metrics['test_roc_auc']
     rf_score = rf_metrics['test_roc_auc']
