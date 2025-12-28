@@ -874,9 +874,11 @@ Change Failure Rate: 1.2%
 ### 1. CI/CD Pipeline Success
 
 **Files:**
-- `screencapture-127-0-0-1-5002-2025-12-28-12_53_17.png`
-- `screencapture-127-0-0-1-5002-2025-12-28-12_53_17.pdf`
-
+- ![ci_cd_1.png](../screenshots/ci_cd_1.png)
+- ![ci_cd_2.png](../screenshots/ci_cd_2.png)
+- ![ci_cd_3.png](../screenshots/ci_cd_3.png)
+- ![ci_cd_4.png](../screenshots/ci_cd_4.png)
+- 
 **Shows:**
 - ✅ All CI/CD stages passing
 - ✅ Build success with 0 errors
@@ -910,9 +912,10 @@ Change Failure Rate: 1.2%
 ### 4. Grafana Monitoring
 
 **Files:**
-- `screencapture-localhost-3000-d-heart-disease-api-analytics-heart-disease-api-detailed-analytics-2025-12-28-19_05_55.png`
-- `screencapture-localhost-3000-d-heart-disease-api-analytics-heart-disease-api-detailed-analytics-2025-12-28-19_07_56.png`
-- `screencapture-localhost-3000-d-heart-disease-api-heart-disease-api-production-monitoring-2025-12-28-19_07_36.png`
+
+![monitor_1.png](../screenshots/monitor_1.png)
+![monitor_2.png](../screenshots/monitor_2.png)
+![monitor_3.png](../screenshots/monitor_3.png)
 
 **Metrics Displayed:**
 - Request rate and throughput
@@ -924,7 +927,7 @@ Change Failure Rate: 1.2%
 ### 5. Prometheus Metrics
 
 **Files:**
-- `screencapture-localhost-3000-d-UDdpyzz7z-prometheus-2-0-stats-2025-12-28-19_11_05.png`
+![monitor_3.png](../screenshots/monitor_3.png)
 
 **Custom Metrics:**
 - `prediction_requests_total`
@@ -949,9 +952,11 @@ Change Failure Rate: 1.2%
 ### 7. GitHub Actions
 
 **Files:**
-- `Screenshot 2025-12-28 at 12.48.25 PM.png`
-- `Screenshot 2025-12-28 at 12.48.34 PM.png`
-- `Screenshot 2025-12-28 at 12.48.51 PM.png`
+
+![ci_cd_1.png](../screenshots/ci_cd_1.png)
+![ci_cd_2.png](../screenshots/ci_cd_2.png)
+![ci_cd_3.png](../screenshots/ci_cd_3.png)
+![ci_cd_4.png](../screenshots/ci_cd_4.png)
 
 **Workflow Runs:**
 - All checks passing
