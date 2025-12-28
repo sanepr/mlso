@@ -1,1 +1,61 @@
-"""\nDownload Heart Disease dataset from UCI ML Repository\n"""\nimport os\nimport urllib.request\nimport pandas as pd\n\ndef download_dataset():\n    """Download UCI Heart Disease dataset"""\n    # Create data directory if it doesn't exist\n    os.makedirs('data/raw', exist_ok=True)\n    \n    # UCI Heart Disease dataset URL\n    url = "https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data"\n    \n    # Column names for the dataset\n    column_names = [\n        'age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg',\n        'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal', 'target'\n    ]\n    \n    print("Downloading Heart Disease dataset from UCI ML Repository...")\n    \n    try:\n        # Download the dataset\n        urllib.request.urlretrieve(url, 'data/raw/heart.data')\n        \n        # Read and save as CSV\n        df = pd.read_csv('data/raw/heart.data', names=column_names, na_values='?')\n        \n        # Convert target to binary (0: no disease, 1: disease present)\n        df['target'] = (df['target'] > 0).astype(int)\n        \n        # Save as CSV\n        df.to_csv('data/raw/heart.csv', index=False)\n        \n        print(f"✓ Dataset downloaded successfully!")\n        print(f"✓ Shape: {df.shape}")\n        print(f"✓ Saved to: data/raw/heart.csv")\n        \n        # Display basic info\n        print("\nDataset Info:")\n        print(df.info())\n        print("\nTarget distribution:")\n        print(df['target'].value_counts())\n        \n        return df\n        \n    except Exception as e:\n        print(f"Error downloading dataset: {e}")\n        raise\n\nif __name__ == "__main__":\n    download_dataset()\n
+"""
+Download Heart Disease dataset from UCI ML Repository
+"""
+import os
+import ssl
+import urllib.request
+import certifi
+import pandas as pd
+
+def download_dataset():
+    """Download UCI Heart Disease dataset"""
+    # Create data directory if it doesn't exist
+    os.makedirs('data/raw', exist_ok=True)
+    
+    # UCI Heart Disease dataset URL
+    url = "https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data"
+    
+    # Column names for the dataset
+    column_names = [
+        'age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg',
+        'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal', 'target'
+    ]
+    
+    print("Downloading Heart Disease dataset from UCI ML Repository...")
+    
+    try:
+        # Create SSL context using certifi CA bundle to avoid macOS certificate issues
+        context = ssl.create_default_context(cafile=certifi.where())
+
+        # Download the dataset with SSL context
+        with urllib.request.urlopen(url, context=context) as response:
+            with open('data/raw/heart.data', 'wb') as out_file:
+                out_file.write(response.read())
+
+        # Read and save as CSV
+        df = pd.read_csv('data/raw/heart.data', names=column_names, na_values='?')
+        
+        # Convert target to binary (0: no disease, 1: disease present)
+        df['target'] = (df['target'] > 0).astype(int)
+        
+        # Save as CSV
+        df.to_csv('data/raw/heart.csv', index=False)
+        
+        print(f"✓ Dataset downloaded successfully!")
+        print(f"✓ Shape: {df.shape}")
+        print(f"✓ Saved to: data/raw/heart.csv")
+        
+        # Display basic info
+        print("Dataset Info:")
+        print(df.info())
+        print("Target distribution:")
+        print(df['target'].value_counts())
+        
+        return df
+        
+    except Exception as e:
+        print(f"Error downloading dataset: {e}")
+        raise
+
+if __name__ == "__main__":
+    download_dataset()

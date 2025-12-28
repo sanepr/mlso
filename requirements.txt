@@ -8,10 +8,18 @@ scipy==1.11.1
 matplotlib==3.7.2
 seaborn==0.12.2
 
+# Jupyter Notebooks
+jupyter==1.0.0
+notebook==7.0.6
+ipykernel==6.25.2
+
 # Experiment Tracking
 mlflow==2.7.1
 
 # API Framework
+flask==2.3.3
+werkzeug==2.3.7
+gunicorn==21.2.0
 fastapi==0.103.1
 uvicorn==0.23.2
 pydantic==2.3.0

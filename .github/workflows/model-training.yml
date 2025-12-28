@@ -1,0 +1,203 @@
+name: Model Training Pipeline
+
+on:
+  schedule:
+    # Run weekly on Sunday at midnight
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+    inputs:
+      retrain_reason:
+        description: 'Reason for retraining'
+        required: false
+        default: 'Manual retrain'
+
+env:
+  PYTHON_VERSION: '3.10'
+  MIN_ACCURACY: 0.70
+  MIN_ROC_AUC: 0.75
+
+jobs:
+  train-and-validate:
+    name: Train and Validate Models
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Download and preprocess data
+      id: data-prep
+      run: |
+        echo "Downloading dataset..."
+        python src/data/download_data.py
+        
+        echo "Preprocessing data..."
+        python src/data/preprocessing.py
+        
+        # Check if processed data exists
+        if [ -f "data/processed/X_train.pkl" ]; then
+          echo "data_ready=true" >> $GITHUB_OUTPUT
+        else
+          echo "data_ready=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Train models
+      if: steps.data-prep.outputs.data_ready == 'true'
+      run: |
+        echo "Training models..."
+        python src/models/train.py
+
+    - name: Validate model performance
+      id: validate
+      run: |
+        python -c "
+        import json
+        import sys
+        from pathlib import Path
+        
+        metadata_path = Path('models/best_model_metadata.json')
+        
+        if not metadata_path.exists():
+            print('❌ Model metadata not found')
+            sys.exit(1)
+        
+        with open(metadata_path, 'r') as f:
+            metadata = json.load(f)
+        
+        accuracy = metadata.get('test_accuracy', 0)
+        roc_auc = metadata.get('test_roc_auc', 0)
+        f1_score = metadata.get('test_f1', 0)
+        
+        print(f'📊 Model Performance:')
+        print(f'  Accuracy: {accuracy:.4f}')
+        print(f'  ROC-AUC:  {roc_auc:.4f}')
+        print(f'  F1-Score: {f1_score:.4f}')
+        
+        # Check thresholds
+        passed = True
+        if accuracy < float('${{ env.MIN_ACCURACY }}'):
+            print(f'❌ Accuracy {accuracy:.4f} below threshold ${{ env.MIN_ACCURACY }}')
+            passed = False
+        else:
+            print(f'✅ Accuracy meets threshold')
+        
+        if roc_auc < float('${{ env.MIN_ROC_AUC }}'):
+            print(f'❌ ROC-AUC {roc_auc:.4f} below threshold ${{ env.MIN_ROC_AUC }}')
+            passed = False
+        else:
+            print(f'✅ ROC-AUC meets threshold')
+        
+        if not passed:
+            sys.exit(1)
+        
+        print('✅ All performance metrics meet requirements')
+        
+        # Write metrics to output
+        with open('$GITHUB_OUTPUT', 'a') as f:
+            f.write(f'accuracy={accuracy}\n')
+            f.write(f'roc_auc={roc_auc}\n')
+            f.write(f'f1_score={f1_score}\n')
+        "
+
+    - name: Compare with previous model
+      id: compare
+      run: |
+        python -c "
+        import json
+        from pathlib import Path
+        
+        current_metadata_path = Path('models/best_model_metadata.json')
+        
+        if current_metadata_path.exists():
+            with open(current_metadata_path, 'r') as f:
+                current = json.load(f)
+            
+            current_acc = current.get('test_accuracy', 0)
+            current_auc = current.get('test_roc_auc', 0)
+            
+            # In production, you would compare with production model
+            # For now, just report current metrics
+            print(f'📈 Current Model Metrics:')
+            print(f'  Accuracy: {current_acc:.4f}')
+            print(f'  ROC-AUC:  {current_auc:.4f}')
+            
+            with open('$GITHUB_OUTPUT', 'a') as f:
+                f.write(f'should_deploy=true\n')
+        "
+      continue-on-error: true
+
+    - name: Upload trained models
+      uses: actions/upload-artifact@v3
+      with:
+        name: trained-models-${{ github.run_number }}
+        path: |
+          models/*.pkl
+          models/*.json
+        retention-days: 90
+
+    - name: Upload training logs
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: training-logs-${{ github.run_number }}
+        path: |
+          logs/
+          mlruns/
+        retention-days: 30
+
+    - name: Create training report
+      run: |
+        cat << EOF > training-report.md
+        # Model Training Report
+        
+        **Run Number:** ${{ github.run_number }}
+        **Date:** $(date -u)
+        **Triggered by:** ${{ github.actor }}
+        **Reason:** ${{ github.event.inputs.retrain_reason || 'Scheduled' }}
+        
+        ## Performance Metrics
+        - **Accuracy:** ${{ steps.validate.outputs.accuracy }}
+        - **ROC-AUC:** ${{ steps.validate.outputs.roc_auc }}
+        - **F1-Score:** ${{ steps.validate.outputs.f1_score }}
+        
+        ## Validation Status
+        - Minimum Accuracy Threshold: ${{ env.MIN_ACCURACY }} ✅
+        - Minimum ROC-AUC Threshold: ${{ env.MIN_ROC_AUC }} ✅
+        
+        ## Deployment Status
+        ${{ steps.compare.outputs.should_deploy == 'true' && '✅ Approved for deployment' || '⚠️ Needs review' }}
+        
+        ## Artifacts
+        - Trained model files
+        - Training logs
+        - MLflow experiments
+        EOF
+        
+        cat training-report.md
+
+    - name: Upload training report
+      uses: actions/upload-artifact@v3
+      with:
+        name: training-report-${{ github.run_number }}
+        path: training-report.md
+        retention-days: 90
+
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "::error::Model training or validation failed. Check logs for details."
+        # In production, send notification to Slack/Email
+        # curl -X POST ${{ secrets.SLACK_WEBHOOK_URL }} \
+        #   -H 'Content-Type: application/json' \
+        #   -d '{"text":"❌ Model training failed for commit ${{ github.sha }}"}'
+

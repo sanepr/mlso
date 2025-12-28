@@ -70,17 +70,48 @@ MODEL_VERSION = "1.0.0"
 MODEL_TYPE = "heart_disease_classifier"
 
 
-def load_model(model_path='models/heart_disease_model.pkl'):
+def load_model(model_path='models/best_model.pkl'):
     """Load the trained model from disk"""
     global model
     try:
-        model = joblib.load(model_path)
+        import pickle
+        with open(model_path, 'rb') as f:
+            model = pickle.load(f)
         logger.info(f"Model loaded successfully from {model_path}")
         model_info.labels(
             model_version=MODEL_VERSION,
             model_type=MODEL_TYPE
         ).set(1)
         return True
+    except FileNotFoundError:
+        logger.error(f"Model file not found at {model_path}")
+        logger.info("Trying alternative model paths...")
+        # Try alternative paths
+        alternative_paths = [
+            'models/random_forest.pkl',
+            'models/logistic_regression.pkl',
+            '/app/models/best_model.pkl',
+            '/app/models/random_forest.pkl'
+        ]
+        for alt_path in alternative_paths:
+            try:
+                import pickle
+                with open(alt_path, 'rb') as f:
+                    model = pickle.load(f)
+                logger.info(f"Model loaded successfully from {alt_path}")
+                model_info.labels(
+                    model_version=MODEL_VERSION,
+                    model_type=MODEL_TYPE
+                ).set(1)
+                return True
+            except:
+                continue
+        logger.error("Failed to load model from any path")
+        model_info.labels(
+            model_version=MODEL_VERSION,
+            model_type=MODEL_TYPE
+        ).set(0)
+        return False
     except Exception as e:
         logger.error(f"Failed to load model: {str(e)}")
         model_info.labels(
@@ -389,13 +420,22 @@ app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
 })
 
 
+# Load model at module level (works with gunicorn)
+# This ensures model is loaded when the module is imported
+logger.info("Loading model at application startup...")
+load_model()
+logger.info(f"Model loading complete. Model loaded: {model is not None}")
+
+
 if __name__ == '__main__':
-    # Load model on startup
-    load_model()
-    
+    import os
+
+    # Get port from environment variable or default to 8000
+    port = int(os.environ.get('PORT', 8000))
+
     # Run the Flask app
     app.run(
         host='0.0.0.0',
-        port=5000,
+        port=port,
         debug=False
     )

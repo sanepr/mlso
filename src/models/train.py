@@ -17,7 +17,6 @@ Author: sanepr
 Date: 2025-12-24
 """
 
-import os
 import sys
 import pickle
 import json
@@ -37,10 +36,7 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
     f1_score,
-    roc_auc_score,
-    confusion_matrix,
-    classification_report,
-    roc_curve
+    roc_auc_score
 )
 
 warnings.filterwarnings('ignore')
@@ -76,11 +72,12 @@ def load_data() -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     print("="*80)
     
     try:
-        X_train = np.load(DATA_DIR / "X_train.npy")
-        X_test = np.load(DATA_DIR / "X_test.npy")
-        y_train = np.load(DATA_DIR / "y_train.npy")
-        y_test = np.load(DATA_DIR / "y_test.npy")
-        
+        # Load pickle files (pandas DataFrames/Series) and convert to numpy arrays
+        X_train = pd.read_pickle(DATA_DIR / "X_train.pkl").values
+        X_test = pd.read_pickle(DATA_DIR / "X_test.pkl").values
+        y_train = pd.read_pickle(DATA_DIR / "y_train.pkl").values
+        y_test = pd.read_pickle(DATA_DIR / "y_test.pkl").values
+
         print(f"✓ Training set: {X_train.shape[0]} samples, {X_train.shape[1]} features")
         print(f"✓ Test set: {X_test.shape[0]} samples")
         print(f"✓ Class distribution (train): {np.bincount(y_train.astype(int))}")
@@ -90,7 +87,12 @@ def load_data() -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     
     except FileNotFoundError as e:
         print(f"✗ Error: Preprocessed data not found in {DATA_DIR}")
-        print("  Please run the preprocessing script first.")
+        print("  Please run the preprocessing script first:")
+        print("  python src/data/preprocessing.py")
+        sys.exit(1)
+    except Exception as e:
+        print(f"✗ Error loading data: {e}")
+        print("  Please ensure preprocessing completed successfully.")
         sys.exit(1)
 
 

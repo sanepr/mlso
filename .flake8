@@ -1,0 +1,59 @@
+[flake8]
+max-line-length = 127
+exclude =
+    .git,
+    __pycache__,
+    venv,
+    env,
+    .venv,
+    .eggs,
+    *.egg,
+    build,
+    dist,
+    .pytest_cache,
+    .mypy_cache
+
+ignore =
+    E203,  # whitespace before ':'
+    E266,  # too many leading '#' for block comment
+    E501,  # line too long (handled by black)
+    W503,  # line break before binary operator
+    W504,  # line break after binary operator
+
+max-complexity = 10
+per-file-ignores =
+    __init__.py:F401
+    tests/*:F401,F811
+
+[pylint]
+disable =
+    C0111,  # missing-docstring
+    C0103,  # invalid-name
+    C0330,  # bad-continuation
+    R0913,  # too-many-arguments
+    R0914,  # too-many-locals
+    R0903,  # too-few-public-methods
+
+max-line-length = 127
+
+[mypy]
+python_version = 3.10
+warn_return_any = True
+warn_unused_configs = True
+disallow_untyped_defs = False
+
+[mypy-tests.*]
+ignore_errors = True
+
+[mypy-sklearn.*]
+ignore_missing_imports = True
+
+[mypy-pandas.*]
+ignore_missing_imports = True
+
+[mypy-numpy.*]
+ignore_missing_imports = True
+
+[mypy-mlflow.*]
+ignore_missing_imports = True
+

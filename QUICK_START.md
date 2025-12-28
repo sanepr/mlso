@@ -51,8 +51,19 @@ python src/data/preprocessing.py
 ### 5. Run Exploratory Data Analysis
 
 ```bash
-# Start Jupyter Notebook
+# Start Jupyter Notebook (choose one of the following methods)
+
+# Method 1: Using jupyter notebook directly
 jupyter notebook
+
+# Method 2: Using JupyterLab (modern interface)
+jupyter lab
+
+# Method 3: If jupyter command not found, use Python module
+python -m notebook
+
+# Method 4: Direct path to virtual environment
+./venv/bin/jupyter notebook
 
 # Open and run:
 # - notebooks/01_eda.ipynb
@@ -269,6 +280,24 @@ print(response.json())
 ```
 
 ## 🐛 Troubleshooting
+
+### Issue: Jupyter command not found
+
+**Solution**: Make sure Jupyter is installed and your virtual environment is activated:
+```bash
+# Ensure virtual environment is activated
+source venv/bin/activate  # On Mac/Linux
+# or
+venv\Scripts\activate  # On Windows
+
+# Install/reinstall Jupyter
+pip install jupyter notebook ipykernel
+
+# Try alternative commands
+python -m notebook
+# or
+jupyter lab
+```
 
 ### Issue: Model not found
 

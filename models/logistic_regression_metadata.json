@@ -1,0 +1,28 @@
+{
+    "model_name": "logistic_regression",
+    "metrics": {
+        "train_accuracy": 0.8347107438016529,
+        "train_precision": 0.8359004178947874,
+        "train_recall": 0.8347107438016529,
+        "train_f1": 0.8338508177323634,
+        "train_roc_auc": 0.9171996423904821,
+        "test_accuracy": 0.8688524590163934,
+        "test_precision": 0.8766252119841718,
+        "test_recall": 0.8688524590163934,
+        "test_f1": 0.8689934778776661,
+        "test_roc_auc": 0.9567099567099567,
+        "cv_accuracy": 0.8181972789115646,
+        "cv_precision": 0.8209781037010402,
+        "cv_recall": 0.8181972789115646,
+        "cv_f1": 0.8167689286435202,
+        "cv_roc_auc": 0.900062497888585
+    },
+    "parameters": {
+        "C": 0.1,
+        "class_weight": "balanced",
+        "max_iter": 1000,
+        "penalty": "l2",
+        "solver": "liblinear"
+    },
+    "timestamp": "2025-12-24 08:49:33"
+}

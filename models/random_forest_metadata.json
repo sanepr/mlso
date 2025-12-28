@@ -1,0 +1,29 @@
+{
+    "model_name": "random_forest",
+    "metrics": {
+        "train_accuracy": 0.9090909090909091,
+        "train_precision": 0.9113251750706985,
+        "train_recall": 0.9090909090909091,
+        "train_f1": 0.9086179497527997,
+        "train_roc_auc": 0.979506223781033,
+        "test_accuracy": 0.8852459016393442,
+        "test_precision": 0.8898995240613432,
+        "test_recall": 0.8852459016393442,
+        "test_f1": 0.8854311382791517,
+        "test_roc_auc": 0.95995670995671,
+        "cv_accuracy": 0.801530612244898,
+        "cv_precision": 0.8050753204663508,
+        "cv_recall": 0.801530612244898,
+        "cv_f1": 0.8001162552725176,
+        "cv_roc_auc": 0.8865702735267952
+    },
+    "parameters": {
+        "class_weight": null,
+        "max_depth": null,
+        "max_features": "sqrt",
+        "min_samples_leaf": 4,
+        "min_samples_split": 2,
+        "n_estimators": 100
+    },
+    "timestamp": "2025-12-24 08:49:33"
+}
