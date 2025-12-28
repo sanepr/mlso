@@ -6,11 +6,11 @@
 [![Coverage](https://img.shields.io/badge/coverage-70%25%2B-brightgreen)](./htmlcov/)
 [![Python](https://img.shields.io/badge/python-3.10.11-blue)](https://www.python.org/)
 [![Code Style](https://img.shields.io/badge/code%20style-black-black)](https://github.com/psf/black)
-[![Project Status](https://img.shields.io/badge/status-production%20ready-brightgreen)](./CI_CD_PIPELINE_SUMMARY.md)
+[![Project Status](https://img.shields.io/badge/status-production%20ready-brightgreen)](./docs/CI_CD_PIPELINE_SUMMARY.md)
 [![Docker](https://img.shields.io/badge/docker-configured-blue)](./Dockerfile)
 [![Kubernetes](https://img.shields.io/badge/kubernetes-ready-brightgreen)](./deployment/kubernetes/)
 
-> **📊 Project Verified:** Complete CI/CD pipeline with 60 automated tests. See [CI/CD Summary](./CI_CD_PIPELINE_SUMMARY.md) for details.
+> **📊 Project Verified:** Complete CI/CD pipeline with 60 automated tests. See [CI/CD Summary](./docs/CI_CD_PIPELINE_SUMMARY.md) for details.
 
 ## 📋 Project Overview
 
@@ -415,7 +415,27 @@ The GitHub Actions pipeline automatically:
 
 ## 📄 Documentation
 
-Detailed documentation available in `docs/REPORT.md`
+Comprehensive documentation is available in the [`docs/`](./docs/) folder:
+
+### 🚀 Quick Start Guides
+- **[docs/QUICK_START_GITHUB.md](./docs/QUICK_START_GITHUB.md)** - Get started with GitHub Actions
+- **[docs/QUICK_START.md](./docs/QUICK_START.md)** - Project quick start
+
+### 🔄 CI/CD Pipeline
+- **[docs/CI_CD_DOCUMENTATION.md](./docs/CI_CD_DOCUMENTATION.md)** - Complete CI/CD guide (600+ lines)
+- **[docs/GITHUB_PIPELINE_SETUP_GUIDE.md](./docs/GITHUB_PIPELINE_SETUP_GUIDE.md)** - Setup with 50 screenshots
+- **[docs/CI_CD_QUICK_REFERENCE.md](./docs/CI_CD_QUICK_REFERENCE.md)** - Quick commands
+
+### 🐳 Docker & Kubernetes
+- **[docs/DOCKER_API_WORKING.md](./docs/DOCKER_API_WORKING.md)** - Docker setup
+- **[docs/KUBERNETES_COMPLETE.md](./docs/KUBERNETES_COMPLETE.md)** - K8s deployment
+- **[docs/MINIKUBE_ACCESS_GUIDE.md](./docs/MINIKUBE_ACCESS_GUIDE.md)** - Minikube guide
+
+### 🧪 Testing & Troubleshooting
+- **[docs/TEST_FAILURES_FIXED.md](./docs/TEST_FAILURES_FIXED.md)** - Test solutions
+- **[docs/MODEL_VALIDATION_FIXED.md](./docs/MODEL_VALIDATION_FIXED.md)** - Validation fixes
+
+**📚 See [docs/README.md](./docs/README.md) for complete documentation index with 40+ guides**
 
 ## 🤝 Contributing
 
