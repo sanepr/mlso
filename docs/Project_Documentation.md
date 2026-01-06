@@ -1,5 +1,3 @@
-I'll create a comprehensive Markdown file with all the project details. Since I can't directly create files, I'll provide you with the complete content that you can save as `PROJECT_REPORT.md`:
-
 ```markdown
 # 🏥 Heart Disease Prediction MLOps Project - Complete Report
 
@@ -889,8 +887,6 @@ Change Failure Rate: 1.2%
 ### 2. Docker API Working
 
 **Files:**
-- `screencapture-127-0-0-1-5002-2025-12-28-16_35_33.png`
-- `screencapture-127-0-0-1-5002-2025-12-28-16_35_51.png`
 
 **Demonstrates:**
 - API health endpoint responding
@@ -901,7 +897,6 @@ Change Failure Rate: 1.2%
 ### 3. Kubernetes Deployment
 
 **Files:**
-- `Screenshot 2025-12-28 at 8.55.48 AM.png`
 
 **Shows:**
 - 3 pods running successfully
@@ -938,9 +933,7 @@ Change Failure Rate: 1.2%
 ### 6. Test Coverage
 
 **Files:**
-- `Screenshot 2025-12-28 at 9.09.07 AM.png`
-- `Screenshot 2025-12-28 at 9.09.19 AM.png`
-- `Screenshot 2025-12-28 at 9.09.35 AM.png`
+``![coverage_1.png](../screenshots/test_coverage_1.png)``
 
 **Coverage Report:**
 - Overall: 85%
