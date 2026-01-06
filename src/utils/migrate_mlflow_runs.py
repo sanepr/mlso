@@ -97,6 +97,16 @@ class MLflowRunsMigrator:
             for key, value in source_run.data.params.items():
                 mlflow.log_param(key, value)
 
+            # Copy metrics
+            for key, value in source_run.data.metrics.items():
+                mlflow.log_metric(key, value)
+
+            # Copy tags
+            for key, value in source_run.data.tags.items():
+                # Skip system tags
+                if not key.startswith('mlflow.'):
+                    mlflow.set_tag(key, value)
+
             # Add migration metadata
             mlflow.set_tag("mlflow.migration.source_run_id", source_run.info.run_id)
             mlflow.set_tag("mlflow.migration.timestamp", datetime.now().isoformat())
@@ -160,6 +170,12 @@ class MLflowRunsMigrator:
         for i, run in enumerate(source_runs, 1):
             print(f"  [{i}/{len(source_runs)}] Migrating run {run.info.run_id[:8]}...", end="")
 
+            # Skip failed runs if requested
+            if skip_failed and run.info.status != RunStatus.to_string(RunStatus.FINISHED):
+                print(" SKIPPED (not finished)")
+                stats["skipped"] += 1
+                continue
+
             try:
                 new_run_id = self.copy_run(run, target_experiment_id, copy_artifacts)
                 print(f" ✓ SUCCESS (new ID: {new_run_id[:8]})")
@@ -206,6 +222,8 @@ class MLflowRunsMigrator:
 
             overall_stats["experiments"] += 1
             overall_stats["success"] += stats["success"]
+            overall_stats["failed"] += stats["failed"]
+            overall_stats["skipped"] += stats["skipped"]
 
         return overall_stats
 
@@ -239,6 +257,18 @@ def main():
         "--target",
         type=str,
         help="Target tracking URI (e.g., http://localhost:5001)"
+    )
+
+    parser.add_argument(
+        "--experiment",
+        type=str,
+        help="Migrate specific experiment only (otherwise migrates all)"
+    )
+
+    parser.add_argument(
+        "--no-artifacts",
+        action="store_true",
+        help="Don't copy artifacts (faster, but incomplete)"
     )
 
     parser.add_argument(
