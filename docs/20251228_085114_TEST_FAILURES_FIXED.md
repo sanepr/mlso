@@ -150,7 +150,7 @@ Files Changed: 4 (tests/, pytest.ini, ci-cd.yml)
 ### Push Status
 ```bash
 git push origin main
-# To github.com:sanepr/mlso.git
+# To github.com:sanepr/mlops-assign-heart-prediction.git
 #    76803bd..ea56e32  main -> main
 ✅ Successfully pushed
 ```
@@ -322,7 +322,7 @@ cat .github/workflows/ci-cd.yml | grep continue-on-error
 ## Next Steps
 
 ### 1. Verify Pipeline
-- Go to https://github.com/sanepr/mlso/actions
+- Go to https://github.com/sanepr/mlops-assign-heart-prediction/actions
 - Click "CI/CD Pipeline"
 - Click "Run workflow"
 - Should complete successfully now ✅

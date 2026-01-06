@@ -54,7 +54,7 @@ Successfully completed full end-to-end execution of the MLOps Heart Disease Pred
 ### Step 3: MLflow Experiment Tracking ✅
 
 **MLflow Configuration:**
-- Tracking URI: `file:///Users/aashishr/codebase/mlso/mlruns`
+- Tracking URI: `file:///Users/aashishr/codebase/mlops-assign-heart-prediction/mlruns`
 - Experiment: `heart-disease-prediction`
 - Total Runs: 8 (includes previous runs)
 - Latest Runs: 2 (Logistic Regression + Random Forest)
@@ -390,8 +390,8 @@ Duration: 1.59s
 ### Complete Setup (Fresh Start)
 ```bash
 # 1. Clone repository
-git clone https://github.com/sanepr/mlso.git
-cd mlso
+git clone https://github.com/sanepr/mlops-assign-heart-prediction.git
+cd mlops-assign-heart-prediction
 
 # 2. Run setup script
 chmod +x setup.sh

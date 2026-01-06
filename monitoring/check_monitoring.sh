@@ -89,7 +89,7 @@ else
     echo "⚠️  Monitoring stack is NOT fully running"
     echo ""
     echo "To start monitoring:"
-    echo "  cd /Users/aashishr/codebase/mlso/monitoring"
+    echo "  cd /Users/aashishr/codebase/mlops-assign-heart-prediction/monitoring"
     echo "  ./setup_grafana_manual.sh"
     echo ""
 fi

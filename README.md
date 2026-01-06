@@ -1,7 +1,7 @@
 # MLOps Heart Disease Prediction Project
 
-[![CI/CD Pipeline](https://github.com/sanepr/mlso/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/sanepr/mlso/actions/workflows/ci-cd.yml)
-[![Model Training](https://github.com/sanepr/mlso/actions/workflows/model-training.yml/badge.svg)](https://github.com/sanepr/mlso/actions/workflows/model-training.yml)
+[![CI/CD Pipeline](https://github.com/sanepr/mlops-assign-heart-prediction/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/sanepr/mlops-assign-heart-prediction/actions/workflows/ci-cd.yml)
+[![Model Training](https://github.com/sanepr/mlops-assign-heart-prediction/actions/workflows/model-training.yml/badge.svg)](https://github.com/sanepr/mlops-assign-heart-prediction/actions/workflows/model-training.yml)
 [![Tests](https://img.shields.io/badge/tests-60%20passed-brightgreen)](./tests/)
 [![Coverage](https://img.shields.io/badge/coverage-70%25%2B-brightgreen)](./htmlcov/)
 [![Python](https://img.shields.io/badge/python-3.10.11-blue)](https://www.python.org/)
@@ -34,7 +34,7 @@ An end-to-end MLOps solution for predicting heart disease risk using the UCI Hea
 ## 🏗️ Project Structure
 
 ```
-mlso/
+mlops-assign-heart-prediction/
 ├── data/
 │   ├── raw/                    # Raw dataset files
 │   ├── processed/              # Cleaned and processed data
@@ -99,8 +99,8 @@ mlso/
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/sanepr/mlso.git
-cd mlso
+git clone https://github.com/sanepr/mlops-assign-heart-prediction.git
+cd mlops-assign-heart-prediction
 ```
 
 2. Create virtual environment:
@@ -466,7 +466,7 @@ When using AI tools to create documentation, they will automatically follow this
 
 Your Name - sanepr
 
-Project Link: [https://github.com/sanepr/mlso](https://github.com/sanepr/mlso)
+Project Link: [https://github.com/sanepr/mlops-assign-heart-prediction](https://github.com/sanepr/mlops-assign-heart-prediction)
 
 ## 📜 License
 

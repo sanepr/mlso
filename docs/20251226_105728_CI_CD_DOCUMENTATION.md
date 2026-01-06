@@ -340,8 +340,8 @@ gh workflow run model-training.yml -f retrain_reason="Manual retrain for testing
 **Badges:**
 Add to README.md:
 ```markdown
-[![CI/CD Pipeline](https://github.com/USERNAME/mlso/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/USERNAME/mlso/actions/workflows/ci-cd.yml)
-[![Model Training](https://github.com/USERNAME/mlso/actions/workflows/model-training.yml/badge.svg)](https://github.com/USERNAME/mlso/actions/workflows/model-training.yml)
+[![CI/CD Pipeline](https://github.com/USERNAME/mlops-assign-heart-prediction/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/USERNAME/mlops-assign-heart-prediction/actions/workflows/ci-cd.yml)
+[![Model Training](https://github.com/USERNAME/mlops-assign-heart-prediction/actions/workflows/model-training.yml/badge.svg)](https://github.com/USERNAME/mlops-assign-heart-prediction/actions/workflows/model-training.yml)
 ```
 
 ### Failure Notifications

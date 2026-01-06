@@ -38,7 +38,7 @@ remote: error: GH001: Large files detected.
 git push origin main
 # Writing objects: 100% (85/85), 116.19 KiB | 474.00 KiB/s, done.
 # Total 85 (delta 9), reused 0 (delta 0), pack-reused 0
-# To github.com:sanepr/mlso.git
+# To github.com:sanepr/mlops-assign-heart-prediction.git
 #    90923cc..59e79cc  main -> main
 ```
 
@@ -73,7 +73,7 @@ git push origin main
 
 ```bash
 # Clone repository
-git clone https://github.com/sanepr/mlso.git
+git clone https://github.com/sanepr/mlops-assign-heart-prediction.git
 cd mlso
 
 # Download minikube (required for Kubernetes)
@@ -117,7 +117,7 @@ chmod +x minikube-darwin-arm64
 ## ✅ Verification
 
 ### Check on GitHub:
-1. Go to: https://github.com/sanepr/mlso
+1. Go to: https://github.com/sanepr/mlops-assign-heart-prediction
 2. You should see all files except minikube binary
 3. Check Actions tab - workflows should be detected
 
@@ -127,7 +127,7 @@ git log -1 --oneline
 # Should show: 59e79cc feat: Complete MLOps implementation...
 
 git remote -v
-# Should show: origin  git@github.com:sanepr/mlso.git
+# Should show: origin  git@github.com:sanepr/mlops-assign-heart-prediction.git
 
 git status
 # Should be clean
@@ -145,7 +145,7 @@ git status
    - Scheduled weekly retraining
 
 ### Next Steps:
-1. Go to repository: https://github.com/sanepr/mlso
+1. Go to repository: https://github.com/sanepr/mlops-assign-heart-prediction
 2. Click "Actions" tab
 3. Select "CI/CD Pipeline"
 4. Click "Run workflow"
@@ -207,7 +207,7 @@ All guides are now on GitHub:
 
 ## ✅ Status: COMPLETE
 
-**Repository:** https://github.com/sanepr/mlso  
+**Repository:** https://github.com/sanepr/mlops-assign-heart-prediction  
 **Status:** ✅ Successfully pushed  
 **Workflows:** ✅ Ready to use  
 **Documentation:** ✅ Complete  
@@ -217,7 +217,7 @@ All guides are now on GitHub:
 
 ## 🚀 Next Steps
 
-1. **View on GitHub:** https://github.com/sanepr/mlso
+1. **View on GitHub:** https://github.com/sanepr/mlops-assign-heart-prediction
 2. **Enable Actions:** Go to Actions tab (should auto-detect)
 3. **Run Pipeline:** Follow QUICK_START_GITHUB.md
 4. **Capture Screenshots:** Use guides provided

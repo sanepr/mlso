@@ -210,7 +210,7 @@ mlflow.log_table(data=comparison_table, artifact_file="model_comparison.json")
 
 ### Train Models:
 ```bash
-cd /Users/aashishr/codebase/mlso
+cd /Users/aashishr/codebase/mlops-assign-heart-prediction
 python src/models/train.py
 ```
 

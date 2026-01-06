@@ -81,8 +81,8 @@ Ensure you have the following installed:
 ### Step 1: Clone Repository
 
 ```bash
-git clone git@github.com:sanepr/mlso.git
-cd mlso
+git clone git@github.com:sanepr/mlops-assign-heart-prediction.git
+cd mlops-assign-heart-prediction
 ```
 
 ### Step 2: Python Environment Setup
@@ -565,7 +565,7 @@ python src/train.py --seed 42 --run-id abc123def456789
 ### Component Details
 
 **1. Source Code Management**
-- Repository: `github.com/sanepr/mlso`
+- Repository: `github.com/sanepr/mlops-assign-heart-prediction`
 - Branching strategy: GitFlow
 - Main branches: `main`, `develop`, `feature/*`
 - Protected branches with required reviews
@@ -981,18 +981,18 @@ Change Failure Rate: 1.2%
 
 ### Code Repository
 
-**GitHub:** [https://github.com/sanepr/mlso](https://github.com/sanepr/mlso)
+**GitHub:** [https://github.com/sanepr/mlops-assign-heart-prediction](https://github.com/sanepr/mlops-assign-heart-prediction)
 
 ```bash
 # Clone repository
-git clone git@github.com:sanepr/mlso.git
-cd mlso
+git clone git@github.com:sanepr/mlops-assign-heart-prediction.git
+cd mlops-assign-heart-prediction
 ```
 
 ### Project Structure
 
 ```
-mlso/
+mlops-assign-heart-prediction/
 ├── .github/
 │   └── workflows/          # CI/CD pipelines (4 files)
 │       ├── ci.yml

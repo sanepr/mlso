@@ -66,12 +66,12 @@ python -m notebook
 **Solution**: Install ipykernel in your virtual environment:
 ```bash
 pip install ipykernel
-python -m ipykernel install --user --name=mlso --display-name "Python (mlso)"
+python -m ipykernel install --user --name=mlops-assign-heart-prediction --display-name "Python (mlops-assign-heart-prediction)"
 ```
 
 ### Issue: Cannot import modules in notebook
 
-**Solution**: Make sure you're using the correct kernel (Python (mlso)) and that your virtual environment is activated.
+**Solution**: Make sure you're using the correct kernel (Python (mlops-assign-heart-prediction)) and that your virtual environment is activated.
 
 ## 💡 Tips
 
