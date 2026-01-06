@@ -98,6 +98,42 @@ def load_model(model_path='models/best_model.pkl'):
                 import pickle
                 with open(alt_path, 'rb') as f:
                     model = pickle.load(f)
+                logger.info(f"Model loaded successfully from {alt_path}")
+                model_info.labels(
+                    model_version=MODEL_VERSION,
+                    model_type=MODEL_TYPE
+                ).set(1)
+                return True
+            except:
+                continue
+        logger.error("Failed to load model from any path")
+        model_info.labels(
+            model_version=MODEL_VERSION,
+            model_type=MODEL_TYPE
+        ).set(0)
+        return False
+    except Exception as e:
+        logger.error(f"Failed to load model: {str(e)}")
+        model_info.labels(
+            model_version=MODEL_VERSION,
+            model_type=MODEL_TYPE
+        ).set(0)
+        return False
+
+
+@app.before_request
+def before_request():
+    """Track active requests and log incoming requests"""
+    active_requests.inc()
+    request.start_time = time.time()
+
+    # Log incoming request
+    logger.info(
+        f"Incoming request: {request.method} {request.path} "
+        f"from {request.remote_addr} "
+        f"User-Agent: {request.headers.get('User-Agent', 'Unknown')}"
+    )
+
 
 @app.after_request
 def after_request(response):
@@ -111,6 +147,10 @@ def after_request(response):
         # Log request completion
         logger.info(
             f"Request completed: {request.method} {request.path} "
+            f"Status: {response.status_code} "
+            f"Duration: {duration*1000:.2f}ms "
+            f"Size: {response.content_length or 0} bytes"
+        )
 
     return response
 
@@ -138,6 +178,14 @@ def predict():
     Expected JSON payload:
     {
         "age": int,
+        "sex": int (0 or 1),
+        "cp": int (0-3),
+        "trestbps": int,
+        "chol": int,
+        "fbs": int (0 or 1),
+        "restecg": int (0-2),
+        "thalach": int,
+        "exang": int (0 or 1),
         "oldpeak": float,
         "slope": int (0-2),
         "ca": int (0-4),
