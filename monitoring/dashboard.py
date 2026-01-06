@@ -63,20 +63,6 @@ class APIMonitor:
             return float(result[0]['value'][1]) * 1000  # Convert to ms
         return 0.0
 
-    def get_error_rate(self) -> float:
-        """Get error rate per second."""
-        result = self.query_prometheus('rate(heart_disease_prediction_errors_total[5m])')
-        if result:
-            return float(result[0]['value'][1])
-        return 0.0
-
-    def get_active_requests(self) -> int:
-        """Get number of active requests."""
-        result = self.query_prometheus('heart_disease_active_requests')
-        if result:
-            return int(float(result[0]['value'][1]))
-        return 0
-
     def get_model_status(self) -> bool:
         """Check if model is loaded."""
         result = self.query_prometheus('heart_disease_model_info')
@@ -100,15 +86,6 @@ class APIMonitor:
         # Get metrics
         total_predictions = self.get_total_predictions()
         predictions_by_result = self.get_predictions_by_result()
-        avg_latency = self.get_avg_latency()
-        error_rate = self.get_error_rate()
-        active_requests = self.get_active_requests()
-        model_loaded = self.get_model_status()
-        api_healthy = self.check_api_health()
-
-        # Display header
-        print("=" * 80)
-        print(" " * 20 + "HEART DISEASE API MONITORING DASHBOARD")
         print("=" * 80)
         print(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"Prometheus: {self.prometheus_url}")
@@ -136,17 +113,6 @@ class APIMonitor:
 
             if total > 0:
                 positive_pct = (positive / total) * 100
-                negative_pct = (negative / total) * 100
-                print(f"  • Positive:        {positive:,} ({positive_pct:.1f}%)")
-                print(f"  • Negative:        {negative:,} ({negative_pct:.1f}%)")
-
-        # Performance Metrics
-        print("\n⚡ PERFORMANCE METRICS")
-        print("-" * 80)
-        latency_status = "🟢" if avg_latency < 100 else "🟡" if avg_latency < 500 else "🔴"
-        print(f"Avg Response Time:   {latency_status} {avg_latency:.2f} ms")
-
-        error_status = "🟢" if error_rate == 0 else "🟡" if error_rate < 0.01 else "🔴"
         print(f"Error Rate:          {error_status} {error_rate:.4f} errors/sec")
 
         # Footer
