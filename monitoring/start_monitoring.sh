@@ -44,10 +44,25 @@ if docker ps | grep -q "heart-disease-prometheus\|heart-disease-grafana"; then
         1)
             echo ""
             echo "🛑 Stopping existing containers..."
+            docker-compose -f docker-compose.monitoring.yml down
+            echo -e "${GREEN}✓ Stopped${NC}"
             echo ""
             ;;
         2)
             echo ""
+            echo -e "${GREEN}✓ Keeping existing stack running${NC}"
+            echo ""
+            echo "Access URLs:"
+            echo "  • Prometheus: http://localhost:9090"
+            echo "  • Grafana:    http://localhost:3000 (admin/admin)"
+            exit 0
+            ;;
+        3)
+            echo ""
+            docker-compose -f docker-compose.monitoring.yml ps
+            echo ""
+            echo "Access URLs:"
+            echo "  • Prometheus: http://localhost:9090"
             echo "  • Grafana:    http://localhost:3000 (admin/admin)"
             exit 0
             ;;
@@ -72,6 +87,14 @@ echo ""
 echo "Checking Prometheus..."
 if curl -s http://localhost:9090/-/healthy > /dev/null 2>&1; then
     echo -e "${GREEN}✓ Prometheus is healthy${NC}"
+else
+    echo -e "${YELLOW}⚠️  Prometheus is starting...${NC}"
+fi
+
+# Check Grafana
+echo "Checking Grafana..."
+if curl -s http://localhost:3000/api/health > /dev/null 2>&1; then
+    echo -e "${GREEN}✓ Grafana is healthy${NC}"
 else
     echo -e "${YELLOW}⚠️  Grafana is starting...${NC}"
 fi
