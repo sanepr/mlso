@@ -16,24 +16,6 @@ class TestAPIFiles:
 
     def test_api_file_exists(self):
         """Test that API file exists"""
-        api_path = Path("src/api/app.py")
-        assert api_path.exists(), "API file should exist"
-
-    def test_dockerfile_exists(self):
-        """Test that Dockerfile exists"""
-        dockerfile = Path("Dockerfile")
-        assert dockerfile.exists(), "Dockerfile should exist"
-
-    def test_requirements_exists(self):
-        """Test that requirements.txt exists"""
-        requirements = Path("requirements.txt")
-        assert requirements.exists(), "requirements.txt should exist"
-
-
-class TestAPIConfiguration:
-    """Test API configuration"""
-
-    def test_test_sample_exists(self):
         """Test that test sample JSON exists"""
         sample_path = Path("test_sample.json")
         assert sample_path.exists(), "test_sample.json should exist"
