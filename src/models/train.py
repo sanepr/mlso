@@ -81,36 +81,8 @@ def load_data() -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, pd.Data
         X_test_df = pd.read_pickle(DATA_DIR / "X_test.pkl")
         y_train_series = pd.read_pickle(DATA_DIR / "y_train.pkl")
         y_test_series = pd.read_pickle(DATA_DIR / "y_test.pkl")
-
         # Convert to numpy arrays for model training
         X_train = X_train_df.values
-        X_test = X_test_df.values
-        y_train = y_train_series.values
-        y_test = y_test_series.values
-
-        print(f"✓ Training set: {X_train.shape[0]} samples, {X_train.shape[1]} features")
-        print(f"✓ Test set: {X_test.shape[0]} samples")
-        print(f"✓ Class distribution (train): {np.bincount(y_train.astype(int))}")
-        print(f"✓ Class distribution (test): {np.bincount(y_test.astype(int))}")
-        
-        return X_train, X_test, y_train, y_test, X_train_df, X_test_df
-
-    except FileNotFoundError as e:
-        print(f"✗ Error: Preprocessed data not found in {DATA_DIR}")
-        print("  Please run the preprocessing script first:")
-        print("  python src/data/preprocessing.py")
-        sys.exit(1)
-    except Exception as e:
-        print(f"✗ Error loading data: {e}")
-        print("  Please ensure preprocessing completed successfully.")
-        sys.exit(1)
-
-
-def get_logistic_regression_params() -> Dict:
-    """Define hyperparameter grid for Logistic Regression."""
-    return {
-        'C': [0.001, 0.01, 0.1, 1, 10, 100],
-        'penalty': ['l1', 'l2'],
         'solver': ['liblinear', 'saga'],
         'max_iter': [1000],
         'class_weight': [None, 'balanced']
